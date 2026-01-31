@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannah White | AI Chat 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-void: #0a0a0b;
+            --bg-elevated: rgba(255, 255, 255, 0.03);
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --bg-glass-hover: rgba(255, 255, 255, 0.07);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --border-glow: rgba(120, 200, 190, 0.15);
+            --text-primary: #f4f4f5;
+            --text-secondary: #a0a0a8;
+            --text-tertiary: #606068;
+            --accent: #78c8be;
+            --accent-dim: rgba(120, 200, 190, 0.12);
+            --accent-glow: rgba(120, 200, 190, 0.25);
+            --user-gradient: linear-gradient(135deg, #2d2d30 0%, #1a1a1c 100%);
+            --shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        /* Ambient glow effects */
+        .ambient {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .ambient::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse, rgba(120, 200, 190, 0.08) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        .ambient::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(90, 150, 180, 0.05) 0%, transparent 60%);
+            animation: drift 12s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateX(-50%) scale(1.1); }
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 20px); }
+        }
+
+        /* Container */
+        .chat-container {
+            max-width: 680px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .chat-header {
+            padding: 24px 28px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            background: rgba(10, 10, 11, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-icon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 50%);
+        }
+
+        .header-icon svg {
+            width: 22px;
+            height: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-text h1 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            font-style: italic;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .header-text p {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-weight: 400;
+            margin-top: 2px;
+            letter-spacing: 0.02em;
+        }
+
+        /* Messages */
+        .messages {
+            flex: 1;
+            padding: 40px 28px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 36px;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: messageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes messageIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* User message */
+        .message.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message.user .bubble {
+            background: var(--user-gradient);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            padding: 14px 22px;
+            border-radius: 24px 24px 8px 24px;
+            max-width: 75%;
+            font-size: 0.9375rem;
+            font-weight: 400;
+            position: relative;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* AI message */
+        .message.ai .bubble {
+            background: transparent;
+            max-width: 100%;
+        }
+
+        .message.ai .content {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            font-weight: 400;
+        }
+
+        .message.ai .content p {
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .message.ai .content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message.ai .content strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .message.ai .content a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .message.ai .content a:hover {
+            opacity: 0.8;
+        }
+
+        /* Typing indicator */
+        .typing {
+            display: flex;
+            gap: 5px;
+            padding: 12px 0;
+        }
+
+        .typing span {
+            width: 6px;
+            height: 6px;
+            background: var(--text-tertiary);
+            border-radius: 50%;
+            animation: typing 1.2s ease-in-out infinite;
+        }
+
+        .typing span:nth-child(2) { animation-delay: 0.15s; }
+        .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes typing {
+            0%, 50%, 100% {
+                opacity: 0.3;
+                transform: scale(0.85);
+            }
+            25% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Product grid - Glass cards */
+        .products {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 24px 0;
+        }
+
+        .product {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border-glass);
+            transform: translateY(-2px);
+        }
+
+        .product:hover::before {
+            opacity: 1;
+        }
+
+        .product-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .product h4 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        .product p {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Article links */
+        .articles {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 24px 0;
+        }
+
+        .article {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 16px 20px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article::after {
+            content: '→';
+            position: absolute;
+            right: 20px;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: all 0.3s ease;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .article:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border-glass);
+            padding-right: 44px;
+        }
+
+        .article:hover::after {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .article-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--accent-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .article-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .article-text span {
+            font-size: 0.6875rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .article-text p {
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+        }
+
+        /* Contact buttons */
+        .contact-btns {
+            display: flex;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 26px;
+            border-radius: 14px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.01em;
+        }
+
+        .contact-btn.primary {
+            background: var(--accent);
+            color: #0a0a0b;
+            box-shadow:
+                0 4px 20px var(--accent-glow),
+                0 0 0 1px rgba(255,255,255,0.1) inset;
+        }
+
+        .contact-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 32px var(--accent-glow),
+                0 0 0 1px rgba(255,255,255,0.15) inset;
+        }
+
+        .contact-btn.secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+        }
+
+        .contact-btn.secondary:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border-glow);
+        }
+
+        /* Award */
+        .award {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(250, 204, 21, 0.06);
+            border: 1px solid rgba(250, 204, 21, 0.12);
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin: 20px 0;
+        }
+
+        .award-icon {
+            font-size: 18px;
+        }
+
+        .award-text {
+            font-size: 0.8125rem;
+            color: #facc15;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        /* Location */
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            margin-top: 12px;
+        }
+
+        .location svg {
+            opacity: 0.6;
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 24px 28px 36px;
+            border-top: 1px solid var(--border-subtle);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            background: rgba(10, 10, 11, 0.7);
+        }
+
+        .input-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 8px 8px 8px 22px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .input-box:focus-within {
+            border-color: var(--border-glow);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+
+        .input-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+            outline: none;
+            padding: 8px 0;
+        }
+
+        .input-box input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: var(--accent);
+            border: none;
+            color: #0a0a0b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .send-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Theme navigation */
+        .theme-nav {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-link {
+            width: 42px;
+            height: 42px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-link:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border-glass);
+            transform: translateY(-2px);
+        }
+
+        .theme-link.current {
+            background: var(--accent-dim);
+            border-color: var(--border-glow);
+            pointer-events: none;
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            padding: 11px 20px;
+            border-radius: 14px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .back-link:hover {
+            background: var(--bg-glass-hover);
+            border-color: var(--border-glass);
+            color: var(--text-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .chat-header { padding: 20px; }
+            .messages { padding: 28px 20px; }
+            .input-area { padding: 20px 20px 28px; }
+            .products { grid-template-columns: 1fr; }
+            .contact-btns { flex-direction: column; }
+            .theme-nav {
+                top: auto;
+                bottom: 110px;
+                right: 20px;
+                flex-direction: column;
+            }
+            .back-link {
+                top: auto;
+                bottom: 110px;
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient"></div>
+
+    <a href="index.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Exit
+    </a>
+
+    <div class="theme-nav">
+        <a href="mac.html" class="theme-link" title="1984">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="3" y="1" width="10" height="12" rx="1" fill="#606068"/>
+                <rect x="4" y="2" width="8" height="6" fill="#a0a0a8"/>
+                <rect x="5" y="13" width="6" height="2" fill="#606068"/>
+            </svg>
+        </a>
+        <a href="win95.html" class="theme-link" title="1995">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="1" width="6" height="6" fill="#ef4444"/>
+                <rect x="9" y="1" width="6" height="6" fill="#22c55e"/>
+                <rect x="1" y="9" width="6" height="6" fill="#3b82f6"/>
+                <rect x="9" y="9" width="6" height="6" fill="#eab308"/>
+            </svg>
+        </a>
+        <a href="appstore.html" class="theme-link" title="2008">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="1" width="14" height="14" rx="3" fill="#3b82f6"/>
+                <text x="8" y="12" font-size="10" fill="white" text-anchor="middle" font-weight="bold">A</text>
+            </svg>
+        </a>
+        <a href="material.html" class="theme-link" title="2015">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="1" width="14" height="14" rx="2" fill="#4285F4"/>
+                <rect x="3" y="3" width="10" height="10" rx="1" fill="#EA4335"/>
+                <rect x="5" y="5" width="6" height="6" rx="1" fill="#FBBC05"/>
+                <rect x="7" y="7" width="2" height="2" fill="#34A853"/>
+            </svg>
+        </a>
+        <a href="chat.html" class="theme-link current" title="2026" style="display:none">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="2" width="14" height="10" rx="3" fill="#78c8be"/>
+                <circle cx="5" cy="7" r="1.5" fill="#0a0a0b"/>
+                <circle cx="8" cy="7" r="1.5" fill="#0a0a0b"/>
+                <circle cx="11" cy="7" r="1.5" fill="#0a0a0b"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5">
+                    <path d="M12 3l1.5 4.5h4.5l-3.5 3 1.5 4.5-4-3-4 3 1.5-4.5-3.5-3h4.5z"/>
+                    <circle cx="12" cy="19" r="2" fill="var(--accent)" stroke="none"/>
+                </svg>
+            </div>
+            <div class="header-text">
+                <h1>Ask about Hannah</h1>
+                <p>AI Portfolio Assistant</p>
+            </div>
+        </div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+            <div class="input-box">
+                <input type="text" placeholder="Ask me anything..." disabled>
+                <button class="send-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const conversation = [
+            {
+                type: 'user',
+                content: 'Who is Hannah White?'
+            },
+            {
+                type: 'ai',
+                content: `<p><strong>Hannah White</strong> is a product leader working at the intersection of AI and IoT. She builds technology that helps enterprises understand their operations in new ways.</p>
+                <p>As Chief Product Officer at Leverege, she leads product strategy and design across four enterprise products.</p>
+                <p>Outside of work, she enjoys hiking in Shenandoah, throwing pottery, and oil painting.</p>
+                <div class="award">
+                    <span class="award-icon">🏆</span>
+                    <span class="award-text">Best Tech Manager in DC — Timmy Awards 2019</span>
+                </div>`
+            },
+            {
+                type: 'user',
+                content: 'What products does she lead?'
+            },
+            {
+                type: 'ai',
+                content: `<p>Hannah leads four enterprise IoT products at Leverege:</p>
+                <div class="products">
+                    <div class="product">
+                        <div class="product-icon">🚗</div>
+                        <h4>AutoTrace</h4>
+                        <p>Asset monitoring & theft prevention</p>
+                    </div>
+                    <div class="product">
+                        <div class="product-icon">🛒</div>
+                        <h4>ExpressLane</h4>
+                        <p>Customer journey tracking</p>
+                    </div>
+                    <div class="product">
+                        <div class="product-icon">🔧</div>
+                        <h4>PitCrew</h4>
+                        <p>Service center insights</p>
+                    </div>
+                    <div class="product">
+                        <div class="product-icon">👁️</div>
+                        <h4>WorkWatch</h4>
+                        <p>Computer vision for quality</p>
+                    </div>
+                </div>`
+            },
+            {
+                type: 'user',
+                content: 'Has she written anything?'
+            },
+            {
+                type: 'ai',
+                content: `<p>Yes — Hannah writes about AI and computer vision:</p>
+                <div class="articles">
+                    <a href="https://www.leverege.com/blogpost/the-clever-hans-effect-how-ai-can-be-fooled" target="_blank" class="article">
+                        <div class="article-icon">✦</div>
+                        <div class="article-text">
+                            <span>Leverege</span>
+                            <p>The Clever Hans Effect: How AI Can Be Fooled</p>
+                        </div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/object-detection-how-ai-identifies-and-tracks-objects-in-real-time" target="_blank" class="article">
+                        <div class="article-icon">✦</div>
+                        <div class="article-text">
+                            <span>Leverege</span>
+                            <p>Object Detection: How AI Identifies Objects</p>
+                        </div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/understanding-image-classification-in-computer-vision" target="_blank" class="article">
+                        <div class="article-icon">✦</div>
+                        <div class="article-text">
+                            <span>Leverege</span>
+                            <p>Image Classification in Computer Vision</p>
+                        </div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/seeing-clearly-addressing-bias-in-computer-vision-models-ai" target="_blank" class="article">
+                        <div class="article-icon">✦</div>
+                        <div class="article-text">
+                            <span>Leverege</span>
+                            <p>Addressing Bias in Computer Vision Models</p>
+                        </div>
+                    </a>
+                </div>`
+            },
+            {
+                type: 'user',
+                content: 'How can I reach her?'
+            },
+            {
+                type: 'ai',
+                content: `<p>You can connect with Hannah here:</p>
+                <div class="contact-btns">
+                    <a href="https://www.linkedin.com/in/hannah0white/" target="_blank" class="contact-btn primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a href="mailto:hannahlizwhite@gmail.com" class="contact-btn secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M22 6l-10 7L2 6"/>
+                        </svg>
+                        Email
+                    </a>
+                </div>
+                <div class="location">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    Washington, DC
+                </div>`
+            }
+        ];
+
+        const messagesEl = document.getElementById('messages');
+        let i = 0;
+
+        function addTyping() {
+            const div = document.createElement('div');
+            div.className = 'message ai';
+            div.innerHTML = '<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            return div;
+        }
+
+        function addMessage(msg) {
+            const div = document.createElement('div');
+            div.className = `message ${msg.type}`;
+            div.innerHTML = msg.type === 'user'
+                ? `<div class="bubble">${msg.content}</div>`
+                : `<div class="bubble"><div class="content">${msg.content}</div></div>`;
+            messagesEl.appendChild(div);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function next() {
+            if (i >= conversation.length) return;
+            const msg = conversation[i];
+
+            if (msg.type === 'ai') {
+                const typing = addTyping();
+                setTimeout(() => {
+                    typing.remove();
+                    addMessage(msg);
+                    i++;
+                    setTimeout(next, 1200);
+                }, 900 + Math.random() * 500);
+            } else {
+                addMessage(msg);
+                i++;
+                setTimeout(next, 600);
+            }
+        }
+
+        setTimeout(next, 800);
+    </script>
+</body>
+</html>

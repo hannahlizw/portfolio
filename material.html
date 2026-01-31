@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannah White | Material Design 2015</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --md-primary: #4285F4;
+            --md-primary-dark: #3367D6;
+            --md-accent: #FF4081;
+            --md-red: #EA4335;
+            --md-yellow: #FBBC05;
+            --md-green: #34A853;
+            --md-text-primary: rgba(0, 0, 0, 0.87);
+            --md-text-secondary: rgba(0, 0, 0, 0.54);
+            --md-text-disabled: rgba(0, 0, 0, 0.38);
+            --md-divider: rgba(0, 0, 0, 0.12);
+            --md-background: #FAFAFA;
+            --md-surface: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            background: #263238;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Phone frame */
+        .phone-frame {
+            width: 360px;
+            height: 640px;
+            background: #1a1a1a;
+            border-radius: 36px;
+            padding: 8px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--md-background);
+            border-radius: 28px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status bar */
+        .status-bar {
+            height: 24px;
+            background: var(--md-primary-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* App bar */
+        .app-bar {
+            height: 56px;
+            background: var(--md-primary);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 10;
+        }
+
+        .app-bar-title {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 500;
+            margin-left: 16px;
+        }
+
+        .app-bar-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .app-bar-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--md-background);
+        }
+
+        .content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 2px;
+        }
+
+        /* Hero card */
+        .hero-card {
+            background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-primary-dark) 100%);
+            padding: 24px 16px;
+            color: #fff;
+            position: relative;
+        }
+
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--md-red), var(--md-yellow), var(--md-green), var(--md-primary));
+        }
+
+        .hero-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-name {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .hero-title {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--md-surface);
+            margin: 8px 8px 0;
+            border-radius: 2px;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--md-divider);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--md-text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--md-primary);
+        }
+
+        .card-content {
+            padding: 16px;
+        }
+
+        .card-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--md-text-secondary);
+        }
+
+        /* List items */
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 16px;
+            border-bottom: 1px solid var(--md-divider);
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+
+        .list-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .list-icon.blue { background: var(--md-primary); color: #fff; }
+        .list-icon.red { background: var(--md-red); color: #fff; }
+        .list-icon.yellow { background: var(--md-yellow); color: #fff; }
+        .list-icon.green { background: var(--md-green); color: #fff; }
+
+        .list-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-primary {
+            font-size: 14px;
+            color: var(--md-text-primary);
+            font-weight: 400;
+        }
+
+        .list-secondary {
+            font-size: 12px;
+            color: var(--md-text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Chips */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .chip {
+            height: 32px;
+            padding: 0 12px;
+            border-radius: 16px;
+            background: #e0e0e0;
+            display: inline-flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--md-text-primary);
+        }
+
+        .chip.primary {
+            background: var(--md-primary);
+            color: #fff;
+        }
+
+        /* Award card */
+        .award-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+            margin: 8px;
+            border-radius: 2px;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        .award-icon {
+            width: 48px;
+            height: 48px;
+            background: #FFC107;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+        }
+
+        .award-text h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--md-text-primary);
+        }
+
+        .award-text p {
+            font-size: 12px;
+            color: var(--md-text-secondary);
+        }
+
+        /* Writing links */
+        .writing-link {
+            display: block;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--md-divider);
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .writing-link:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .writing-link:last-child {
+            border-bottom: none;
+        }
+
+        .writing-source {
+            font-size: 10px;
+            color: var(--md-primary);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .writing-title {
+            font-size: 14px;
+            color: var(--md-text-primary);
+            line-height: 1.4;
+        }
+
+        /* FAB */
+        .fab {
+            position: absolute;
+            bottom: 72px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--md-accent);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 3px 5px rgba(0, 0, 0, 0.2),
+                0 6px 10px rgba(0, 0, 0, 0.14);
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            box-shadow:
+                0 5px 8px rgba(0, 0, 0, 0.2),
+                0 8px 16px rgba(0, 0, 0, 0.14);
+            transform: scale(1.05);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            height: 56px;
+            background: var(--md-surface);
+            display: flex;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--md-text-disabled);
+            text-decoration: none;
+            font-size: 12px;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--md-primary);
+        }
+
+        .nav-item:hover {
+            color: var(--md-primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Contact buttons */
+        .contact-buttons {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .md-button {
+            flex: 1;
+            height: 36px;
+            border-radius: 2px;
+            border: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: box-shadow 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .md-button.raised {
+            background: var(--md-primary);
+            color: #fff;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        .md-button.raised:hover {
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.16),
+                0 3px 6px rgba(0, 0, 0, 0.23);
+        }
+
+        .md-button.flat {
+            background: transparent;
+            color: var(--md-primary);
+        }
+
+        .md-button.flat:hover {
+            background: rgba(66, 133, 244, 0.08);
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* Theme Navigation */
+        .theme-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow:
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        .theme-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.16),
+                0 3px 6px rgba(0, 0, 0, 0.23);
+            transform: scale(1.1);
+        }
+
+        .theme-link.current {
+            background: rgba(255, 255, 255, 0.25);
+            pointer-events: none;
+        }
+
+        /* Location */
+        .location {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            color: var(--md-text-secondary);
+            font-size: 12px;
+        }
+
+        /* Spacer */
+        .spacer {
+            height: 80px;
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+            .phone-frame {
+                width: 100%;
+                height: 100vh;
+                height: 100dvh;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            .phone-screen {
+                border-radius: 0;
+            }
+            .back-link {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            .fab {
+                bottom: 72px;
+                right: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        Exit
+    </a>
+
+    <!-- Theme Navigation -->
+    <div class="theme-nav">
+        <a href="mac.html" class="theme-link" title="Mac OS 1.0 (1984)">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="3" y="1" width="10" height="12" rx="1" fill="rgba(255,255,255,0.8)"/>
+                <rect x="4" y="2" width="8" height="6" fill="rgba(0,0,0,0.3)"/>
+                <rect x="5" y="13" width="6" height="2" fill="rgba(255,255,255,0.8)"/>
+            </svg>
+        </a>
+        <a href="win95.html" class="theme-link" title="Windows 95 (1995)">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="1" width="6" height="6" fill="#FF0000"/>
+                <rect x="9" y="1" width="6" height="6" fill="#00FF00"/>
+                <rect x="1" y="9" width="6" height="6" fill="#0000FF"/>
+                <rect x="9" y="9" width="6" height="6" fill="#FFFF00"/>
+            </svg>
+        </a>
+        <a href="appstore.html" class="theme-link" title="App Store (2008)">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <defs>
+                    <linearGradient id="appstore-mat" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1BA1E2"/>
+                        <stop offset="100%" style="stop-color:#0066CC"/>
+                    </linearGradient>
+                </defs>
+                <rect x="1" y="1" width="14" height="14" rx="3" fill="url(#appstore-mat)"/>
+                <text x="8" y="12" font-size="10" fill="white" text-anchor="middle" font-family="serif" font-weight="bold">A</text>
+            </svg>
+        </a>
+        <a href="material.html" class="theme-link current" title="Material Design (2015)">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="1" width="14" height="14" rx="2" fill="#4285F4"/>
+                <rect x="3" y="3" width="10" height="10" rx="1" fill="#EA4335"/>
+                <rect x="5" y="5" width="6" height="6" rx="1" fill="#FBBC05"/>
+                <rect x="7" y="7" width="2" height="2" fill="#34A853"/>
+            </svg>
+        </a>
+        <a href="chat.html" class="theme-link" title="AI Chat (2026)" style="display:none">
+            <svg viewBox="0 0 16 16" width="18" height="18">
+                <rect x="1" y="2" width="14" height="10" rx="2" fill="#3b82f6"/>
+                <circle cx="5" cy="7" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="8" cy="7" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                <circle cx="11" cy="7" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                <path d="M4 12l2 2v-2" fill="#3b82f6"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span>9:41</span>
+                <div class="status-icons">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21l3.6-4.8c-1-.75-2.25-1.2-3.6-1.2s-2.6.45-3.6 1.2L12 21zm0-18C7.05 3 2.56 4.83 0 8.1l2.4 3.2c1.95-2.5 5.55-4.3 9.6-4.3s7.65 1.8 9.6 4.3L24 8.1C21.44 4.83 16.95 3 12 3z"/>
+                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- App Bar -->
+            <div class="app-bar">
+                <div class="app-bar-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </div>
+                <span class="app-bar-title">Portfolio</span>
+                <div class="app-bar-actions">
+                    <div class="app-bar-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Hero -->
+                <div id="section-home" class="hero-card">
+                    <div class="hero-avatar">HW</div>
+                    <h1 class="hero-name">Hannah White</h1>
+                    <p class="hero-title">Chief Product Officer</p>
+                </div>
+
+                <!-- About Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg class="card-title-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                            About
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p class="card-text">
+                            I'm a product leader at the intersection of AI and IoT, building technology that transforms how enterprises see and understand their operations.
+                        </p>
+                        <br>
+                        <p class="card-text">
+                            Outside of work, you'll find me hiking in Shenandoah, at the pottery wheel, or working on oil paintings.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Award -->
+                <div class="award-card">
+                    <div class="award-icon">🏆</div>
+                    <div class="award-text">
+                        <h4>Best Tech Manager in DC</h4>
+                        <p>Timmy Awards 2019</p>
+                    </div>
+                </div>
+
+                <!-- Products Card -->
+                <div id="section-work" class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg class="card-title-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/>
+                            </svg>
+                            Products I Lead
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon blue">🚗</div>
+                        <div class="list-text">
+                            <div class="list-primary">AutoTrace</div>
+                            <div class="list-secondary">Asset monitoring & theft prevention</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon yellow">🛒</div>
+                        <div class="list-text">
+                            <div class="list-primary">ExpressLane</div>
+                            <div class="list-secondary">Customer journey tracking</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon red">🔧</div>
+                        <div class="list-text">
+                            <div class="list-primary">PitCrew</div>
+                            <div class="list-secondary">Service center insights</div>
+                        </div>
+                    </div>
+                    <div class="list-item">
+                        <div class="list-icon green">👁️</div>
+                        <div class="list-text">
+                            <div class="list-primary">WorkWatch</div>
+                            <div class="list-secondary">Computer vision for quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Writing Card -->
+                <div id="section-articles" class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg class="card-title-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                            Writing
+                        </div>
+                    </div>
+                    <a href="https://www.leverege.com/blogpost/the-clever-hans-effect-how-ai-can-be-fooled" target="_blank" class="writing-link">
+                        <div class="writing-source">Leverege</div>
+                        <div class="writing-title">The Clever Hans Effect: How AI Can Be Fooled</div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/object-detection-how-ai-identifies-and-tracks-objects-in-real-time" target="_blank" class="writing-link">
+                        <div class="writing-source">Leverege</div>
+                        <div class="writing-title">Object Detection: How AI Identifies and Tracks Objects</div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/understanding-image-classification-in-computer-vision" target="_blank" class="writing-link">
+                        <div class="writing-source">Leverege</div>
+                        <div class="writing-title">Image Classification: How AI Categorizes Images</div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/seeing-clearly-addressing-bias-in-computer-vision-models-ai" target="_blank" class="writing-link">
+                        <div class="writing-source">Leverege</div>
+                        <div class="writing-title">Addressing Bias in Computer Vision Models</div>
+                    </a>
+                    <a href="https://www.leverege.com/blogpost/prioritizing-privacy-in-enterprise-computer-vision-solutions" target="_blank" class="writing-link">
+                        <div class="writing-source">Leverege</div>
+                        <div class="writing-title">Prioritizing Privacy in Enterprise Computer Vision</div>
+                    </a>
+                </div>
+
+                <!-- Contact Card -->
+                <div id="section-contact" class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg class="card-title-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            Contact
+                        </div>
+                    </div>
+                    <div class="contact-buttons">
+                        <a href="https://www.linkedin.com/in/hannah0white/" target="_blank" class="md-button raised">
+                            LinkedIn
+                        </a>
+                        <a href="mailto:hannahlizwhite@gmail.com" class="md-button flat">
+                            Email
+                        </a>
+                    </div>
+                    <div class="location">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        Washington, DC
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+            </div>
+
+            <!-- FAB -->
+            <a href="mailto:hannahlizwhite@gmail.com" class="fab">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+            </a>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <a href="#section-home" class="nav-item active" data-section="section-home">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                    <span>Home</span>
+                </a>
+                <a href="#section-work" class="nav-item" data-section="section-work">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>
+                    </svg>
+                    <span>Work</span>
+                </a>
+                <a href="#section-articles" class="nav-item" data-section="section-articles">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                    <span>Articles</span>
+                </a>
+                <a href="#section-contact" class="nav-item" data-section="section-contact">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span>Contact</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bottom nav smooth scrolling
+        const content = document.querySelector('.content');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.dataset.section;
+                const section = document.getElementById(sectionId);
+
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Update active state
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav on scroll
+        const sections = ['section-home', 'section-work', 'section-articles', 'section-contact'];
+
+        content.addEventListener('scroll', () => {
+            let current = sections[0];
+
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    const contentRect = content.getBoundingClientRect();
+                    if (rect.top <= contentRect.top + 100) {
+                        current = sectionId;
+                    }
+                }
+            });
+
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.section === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

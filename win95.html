@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannah White | Windows 95</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --win-bg: #008080;
+            --win-silver: #c0c0c0;
+            --win-dark-silver: #808080;
+            --win-navy: #000080;
+            --win-white: #ffffff;
+            --win-black: #000000;
+            --win-light: #dfdfdf;
+            --win-shadow: #404040;
+            --highlight-light: #ffffff;
+            --highlight-dark: #808080;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 11px;
+            background: var(--win-bg);
+            min-height: 100vh;
+            overflow: hidden;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='19'%3E%3Cpath fill='white' stroke='black' d='M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L11,11 Z'/%3E%3C/svg%3E") 0 0, auto;
+        }
+
+        /* Desktop */
+        .desktop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 28px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 5px;
+        }
+
+        /* Desktop Icons */
+        .desktop-icon {
+            width: 75px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 1px dotted transparent;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(0, 0, 128, 0.3);
+        }
+
+        .desktop-icon.selected {
+            background: var(--win-navy);
+            border: 1px dotted var(--win-white);
+        }
+
+        .desktop-icon.selected .icon-label {
+            background: var(--win-navy);
+            color: var(--win-white);
+        }
+
+        .icon-img {
+            width: 32px;
+            height: 32px;
+            image-rendering: pixelated;
+        }
+
+        .icon-label {
+            font-size: 11px;
+            text-align: center;
+            color: var(--win-white);
+            text-shadow: 1px 1px 0 #000;
+            padding: 1px 2px;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        /* Window */
+        .window {
+            position: absolute;
+            background: var(--win-silver);
+            min-width: 200px;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+            display: none;
+            z-index: 10;
+        }
+
+        .window.active {
+            display: block;
+        }
+
+        .window.maximized {
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: calc(100vh - 28px) !important;
+        }
+
+        .window.focused {
+            z-index: 100;
+        }
+
+        .window-header {
+            background: linear-gradient(90deg, var(--win-navy) 0%, #1084d0 100%);
+            padding: 3px 3px 3px 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .window.unfocused .window-header {
+            background: linear-gradient(90deg, #808080 0%, #a0a0a0 100%);
+        }
+
+        .window-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .window-title {
+            flex: 1;
+            color: var(--win-white);
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .window-btn {
+            width: 16px;
+            height: 14px;
+            background: var(--win-silver);
+            border: none;
+            font-family: inherit;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light);
+        }
+
+        .window-btn:active {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+            padding-top: 1px;
+            padding-left: 1px;
+        }
+
+        .btn-minimize::after {
+            content: '';
+            width: 6px;
+            height: 2px;
+            background: var(--win-black);
+            margin-top: 4px;
+        }
+
+        .btn-maximize::after {
+            content: '';
+            width: 8px;
+            height: 7px;
+            border: 1px solid var(--win-black);
+            border-top-width: 2px;
+        }
+
+        .btn-close {
+            margin-left: 2px;
+        }
+
+        .btn-close::before {
+            content: '\00d7';
+            font-size: 14px;
+            line-height: 1;
+            margin-top: -2px;
+        }
+
+        .window-menu {
+            background: var(--win-silver);
+            padding: 2px 0;
+            border-bottom: 1px solid var(--win-dark-silver);
+            display: flex;
+            gap: 2px;
+        }
+
+        .menu-item {
+            padding: 2px 8px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--win-navy);
+            color: var(--win-white);
+        }
+
+        .menu-item u {
+            text-decoration: underline;
+        }
+
+        .window-content {
+            padding: 8px;
+            background: var(--win-silver);
+            overflow: auto;
+            max-height: calc(100vh - 120px);
+        }
+
+        .window-statusbar {
+            background: var(--win-silver);
+            padding: 2px 4px;
+            font-size: 11px;
+            border-top: 1px solid var(--win-dark-silver);
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+            margin: 2px;
+        }
+
+        /* Taskbar */
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: var(--win-silver);
+            display: flex;
+            align-items: center;
+            padding: 2px 2px;
+            box-shadow: inset 0 1px 0 var(--highlight-light);
+            z-index: 9999;
+        }
+
+        .start-btn {
+            height: 22px;
+            padding: 2px 6px 2px 4px;
+            background: var(--win-silver);
+            border: none;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+        }
+
+        .start-btn:active, .start-btn.active {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light),
+                inset 2px 2px 0 var(--win-dark-silver);
+            padding: 3px 5px 1px 5px;
+        }
+
+        .start-btn img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .taskbar-divider {
+            width: 2px;
+            height: 22px;
+            margin: 0 4px;
+            background: linear-gradient(90deg, var(--win-dark-silver) 0%, var(--win-dark-silver) 50%, var(--highlight-light) 50%, var(--highlight-light) 100%);
+        }
+
+        .taskbar-windows {
+            flex: 1;
+            display: flex;
+            gap: 3px;
+            overflow-x: auto;
+            padding: 0 4px;
+        }
+
+        .taskbar-item {
+            height: 22px;
+            min-width: 140px;
+            max-width: 160px;
+            padding: 2px 6px;
+            background: var(--win-silver);
+            border: none;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light);
+        }
+
+        .taskbar-item.active {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+            background: repeating-conic-gradient(var(--win-silver) 0% 25%, var(--win-white) 0% 50%) 50% / 2px 2px;
+        }
+
+        .taskbar-item img {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .system-tray {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 8px;
+            height: 22px;
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+        }
+
+        .tray-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tray-time {
+            font-size: 11px;
+            padding-left: 4px;
+        }
+
+        /* Start Menu */
+        .start-menu {
+            position: fixed;
+            bottom: 28px;
+            left: 0;
+            width: 200px;
+            background: var(--win-silver);
+            display: none;
+            z-index: 10000;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+        }
+
+        .start-menu.active {
+            display: block;
+        }
+
+        .start-menu-sidebar {
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            bottom: 3px;
+            width: 22px;
+            background: linear-gradient(180deg, var(--win-navy) 0%, #1084d0 100%);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px 3px;
+        }
+
+        .start-menu-brand {
+            color: var(--win-white);
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .start-menu-brand span {
+            font-weight: normal;
+            color: #c0c0c0;
+        }
+
+        .start-menu-items {
+            margin-left: 25px;
+            padding: 3px;
+        }
+
+        .start-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .start-menu-item:hover {
+            background: var(--win-navy);
+            color: var(--win-white);
+        }
+
+        .start-menu-item img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .start-menu-divider {
+            height: 1px;
+            background: var(--win-dark-silver);
+            margin: 2px 8px 2px 32px;
+            box-shadow: 0 1px 0 var(--highlight-light);
+        }
+
+        /* Content Styles */
+        .content-box {
+            background: var(--win-white);
+            padding: 12px;
+            margin: 4px 0;
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+        }
+
+        .content-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--win-navy);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--win-dark-silver);
+        }
+
+        .content-text {
+            font-size: 11px;
+            line-height: 1.6;
+            color: var(--win-black);
+            margin-bottom: 8px;
+        }
+
+        .content-text:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Product List */
+        .product-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .product-card {
+            background: var(--win-silver);
+            padding: 8px;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light);
+        }
+
+        .product-card:hover {
+            background: var(--win-navy);
+            color: var(--win-white);
+        }
+
+        .product-card h4 {
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .product-card p {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
+        /* Links styled as 90s hyperlinks */
+        a {
+            color: #0000ff;
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #800080;
+        }
+
+        a:hover {
+            color: #ff0000;
+        }
+
+        /* Writing list */
+        .writing-list {
+            list-style: none;
+        }
+
+        .writing-list li {
+            padding: 4px 0;
+            border-bottom: 1px dotted var(--win-dark-silver);
+            font-size: 11px;
+        }
+
+        .writing-list li:last-child {
+            border-bottom: none;
+        }
+
+        .writing-source {
+            background: var(--win-navy);
+            color: var(--win-white);
+            padding: 1px 4px;
+            font-size: 9px;
+            margin-right: 6px;
+        }
+
+        /* Award banner */
+        .award-banner {
+            background: linear-gradient(90deg, #ffd700 0%, #ffed4a 50%, #ffd700 100%);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+            box-shadow:
+                inset -1px -1px 0 #b8860b,
+                inset 1px 1px 0 #fff8dc;
+        }
+
+        .award-year {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--win-navy);
+            font-family: 'VT323', monospace;
+        }
+
+        .award-text h3 {
+            font-size: 12px;
+            color: var(--win-black);
+        }
+
+        .award-text p {
+            font-size: 10px;
+            color: var(--win-dark-silver);
+        }
+
+        /* Buttons */
+        .win-btn {
+            padding: 4px 16px;
+            background: var(--win-silver);
+            border: none;
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+        }
+
+        .win-btn:active {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+        }
+
+        .win-btn:focus {
+            outline: 1px dotted var(--win-black);
+            outline-offset: -4px;
+        }
+
+        /* Contact form styling */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .contact-row label {
+            width: 50px;
+            font-size: 11px;
+        }
+
+        .win-input {
+            flex: 1;
+            padding: 3px 4px;
+            font-family: inherit;
+            font-size: 11px;
+            background: var(--win-white);
+            border: none;
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light);
+        }
+
+        /* Intro window special styling */
+        .intro-hero {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .intro-hero h1 {
+            font-family: 'VT323', monospace;
+            font-size: 36px;
+            color: var(--win-navy);
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 var(--win-silver);
+        }
+
+        .intro-hero .title {
+            font-size: 14px;
+            color: var(--win-dark-silver);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .intro-hero .tagline {
+            margin-top: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .intro-hero .tagline strong {
+            color: var(--win-navy);
+        }
+
+        /* Clippy helper */
+        .clippy {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            width: 120px;
+            z-index: 500;
+            animation: clippy-bounce 2s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        .clippy-bubble {
+            background: #ffffcc;
+            border: 1px solid var(--win-black);
+            padding: 8px 12px;
+            font-size: 11px;
+            margin-bottom: 4px;
+            position: relative;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .clippy-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            border: 4px solid transparent;
+            border-top-color: #ffffcc;
+        }
+
+        .clippy-img {
+            width: 60px;
+            margin-left: 10px;
+        }
+
+        @keyframes clippy-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Boot screen animation */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--win-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: boot-fade 0.5s ease-out 2.5s forwards;
+        }
+
+        .boot-logo {
+            width: 300px;
+            margin-bottom: 40px;
+        }
+
+        .boot-text {
+            font-family: 'VT323', monospace;
+            color: var(--win-white);
+            font-size: 20px;
+            letter-spacing: 4px;
+        }
+
+        .boot-progress {
+            width: 200px;
+            height: 20px;
+            background: var(--win-dark-silver);
+            margin-top: 20px;
+            box-shadow:
+                inset 1px 1px 0 var(--win-black),
+                inset -1px -1px 0 var(--win-white);
+        }
+
+        .boot-progress-bar {
+            height: 100%;
+            background: var(--win-navy);
+            width: 0%;
+            animation: boot-load 2s ease-out forwards;
+        }
+
+        @keyframes boot-load {
+            0% { width: 0%; }
+            20% { width: 15%; }
+            40% { width: 45%; }
+            60% { width: 70%; }
+            80% { width: 90%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes boot-fade {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Back to normal button */
+        .back-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10001;
+            padding: 4px 12px;
+            background: var(--win-silver);
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--win-black);
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-btn:hover {
+            background: var(--win-light);
+            color: var(--win-black);
+        }
+
+        /* Theme Navigation */
+        .theme-nav {
+            position: fixed;
+            top: 10px;
+            right: 120px;
+            z-index: 10001;
+            display: flex;
+            gap: 2px;
+        }
+
+        .theme-link {
+            width: 28px;
+            height: 26px;
+            background: var(--win-silver);
+            box-shadow:
+                inset -1px -1px 0 var(--win-shadow),
+                inset 1px 1px 0 var(--highlight-light),
+                inset -2px -2px 0 var(--win-dark-silver),
+                inset 2px 2px 0 var(--win-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .theme-link:hover {
+            background: var(--win-light);
+        }
+
+        .theme-link:active {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light),
+                inset 2px 2px 0 var(--win-dark-silver);
+        }
+
+        .theme-link.current {
+            box-shadow:
+                inset 1px 1px 0 var(--win-shadow),
+                inset -1px -1px 0 var(--highlight-light),
+                inset 2px 2px 0 var(--win-dark-silver);
+            background: var(--win-light);
+            pointer-events: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .window {
+                width: calc(100% - 20px) !important;
+                left: 10px !important;
+            }
+
+            .product-list {
+                grid-template-columns: 1fr;
+            }
+
+            .clippy {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Boot Screen -->
+    <div class="boot-screen">
+        <svg class="boot-logo" viewBox="0 0 300 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="25" height="25" fill="#ff0000"/>
+            <rect x="38" y="10" width="25" height="25" fill="#00ff00"/>
+            <rect x="10" y="38" width="25" height="25" fill="#0000ff"/>
+            <rect x="38" y="38" width="25" height="25" fill="#ffff00"/>
+            <text x="80" y="45" fill="white" font-family="'VT323', monospace" font-size="32">Windows 95</text>
+        </svg>
+        <div class="boot-text">Starting Windows 95...</div>
+        <div class="boot-progress">
+            <div class="boot-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+            <path d="M8 1L3 6L8 11" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Exit
+    </a>
+
+    <!-- Theme Navigation -->
+    <div class="theme-nav">
+        <a href="mac.html" class="theme-link" title="Mac OS 1.0 (1984)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="3" y="1" width="10" height="12" rx="1" fill="#000"/>
+                <rect x="4" y="2" width="8" height="6" fill="#fff"/>
+                <rect x="5" y="13" width="6" height="2" fill="#000"/>
+            </svg>
+        </a>
+        <a href="win95.html" class="theme-link current" title="Windows 95 (1995)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="1" width="6" height="6" fill="#FF0000"/>
+                <rect x="9" y="1" width="6" height="6" fill="#00FF00"/>
+                <rect x="1" y="9" width="6" height="6" fill="#0000FF"/>
+                <rect x="9" y="9" width="6" height="6" fill="#FFFF00"/>
+            </svg>
+        </a>
+        <a href="appstore.html" class="theme-link" title="App Store (2008)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <defs>
+                    <linearGradient id="appstore-btn" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1BA1E2"/>
+                        <stop offset="100%" style="stop-color:#0066CC"/>
+                    </linearGradient>
+                </defs>
+                <rect x="1" y="1" width="14" height="14" rx="3" fill="url(#appstore-btn)"/>
+                <text x="8" y="12" font-size="10" fill="white" text-anchor="middle" font-family="serif" font-weight="bold">A</text>
+            </svg>
+        </a>
+        <a href="material.html" class="theme-link" title="Material Design (2015)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="1" width="14" height="14" rx="2" fill="#4285F4"/>
+                <rect x="3" y="3" width="10" height="10" rx="1" fill="#EA4335"/>
+                <rect x="5" y="5" width="6" height="6" rx="1" fill="#FBBC05"/>
+                <rect x="7" y="7" width="2" height="2" fill="#34A853"/>
+            </svg>
+        </a>
+        <a href="chat.html" class="theme-link" title="AI Chat (2026)" style="display:none">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="2" width="14" height="10" rx="2" fill="#3b82f6"/>
+                <circle cx="5" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="8" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="11" cy="7" r="1.5" fill="#fff"/>
+                <path d="M4 12l2 2v-2" fill="#3b82f6"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Desktop -->
+    <div class="desktop">
+        <!-- Desktop Icons -->
+        <div class="desktop-icon" ondblclick="openWindow('about')">
+            <svg class="icon-img" viewBox="0 0 32 32">
+                <rect x="4" y="2" width="24" height="28" fill="#808080"/>
+                <rect x="5" y="3" width="22" height="26" fill="#ffffe0"/>
+                <rect x="7" y="6" width="8" height="8" fill="#008080"/>
+                <rect x="7" y="16" width="16" height="2" fill="#808080"/>
+                <rect x="7" y="20" width="14" height="2" fill="#808080"/>
+                <rect x="7" y="24" width="12" height="2" fill="#808080"/>
+            </svg>
+            <span class="icon-label">About Hannah</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('products')">
+            <svg class="icon-img" viewBox="0 0 32 32">
+                <rect x="2" y="8" width="28" height="20" fill="#808080"/>
+                <rect x="3" y="9" width="26" height="18" fill="#000080"/>
+                <rect x="5" y="11" width="22" height="14" fill="#008080"/>
+                <rect x="13" y="4" width="6" height="5" fill="#c0c0c0"/>
+                <rect x="12" y="2" width="8" height="3" fill="#808080"/>
+            </svg>
+            <span class="icon-label">Products</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('writing')">
+            <svg class="icon-img" viewBox="0 0 32 32">
+                <rect x="6" y="2" width="20" height="28" fill="#ffffff"/>
+                <rect x="4" y="4" width="20" height="28" fill="#808080"/>
+                <rect x="5" y="5" width="18" height="26" fill="#ffffe0"/>
+                <rect x="8" y="8" width="12" height="2" fill="#000080"/>
+                <rect x="8" y="12" width="10" height="1" fill="#808080"/>
+                <rect x="8" y="15" width="12" height="1" fill="#808080"/>
+                <rect x="8" y="18" width="8" height="1" fill="#808080"/>
+                <rect x="8" y="21" width="11" height="1" fill="#808080"/>
+                <rect x="8" y="24" width="9" height="1" fill="#808080"/>
+            </svg>
+            <span class="icon-label">Writing</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="openWindow('contact')">
+            <svg class="icon-img" viewBox="0 0 32 32">
+                <rect x="2" y="6" width="28" height="20" fill="#808080"/>
+                <rect x="3" y="7" width="26" height="18" fill="#ffffe0"/>
+                <polygon points="3,7 16,16 29,7" fill="#c4a000"/>
+                <polygon points="3,25 12,16 3,7" fill="#a08000" opacity="0.3"/>
+                <polygon points="29,25 20,16 29,7" fill="#a08000" opacity="0.3"/>
+            </svg>
+            <span class="icon-label">Contact</span>
+        </div>
+
+        <div class="desktop-icon" ondblclick="window.open('https://www.linkedin.com/in/hannah0white/', '_blank')">
+            <svg class="icon-img" viewBox="0 0 32 32">
+                <rect x="2" y="2" width="28" height="28" fill="#0077b5"/>
+                <rect x="6" y="12" width="4" height="14" fill="#ffffff"/>
+                <rect x="6" y="6" width="4" height="4" fill="#ffffff"/>
+                <path d="M13,12 v14 h4 v-8 c0-2 1-3 3-3 s2 1 2 3 v8 h4 v-9 c0-4 -2-6 -5-6 s-4 2 -4 2 v-1 z" fill="#ffffff"/>
+            </svg>
+            <span class="icon-label">LinkedIn</span>
+        </div>
+    </div>
+
+    <!-- Windows -->
+    <!-- About Window -->
+    <div class="window active" id="window-about" style="top: 40px; left: 80px; width: 480px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-about')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="1" width="12" height="14" fill="#ffffe0"/>
+                <rect x="4" y="3" width="4" height="4" fill="#008080"/>
+            </svg>
+            <span class="window-title">About Hannah - Portfolio</span>
+            <div class="window-controls">
+                <button class="window-btn btn-minimize" onclick="minimizeWindow('about')"></button>
+                <button class="window-btn btn-maximize" onclick="maximizeWindow('about')"></button>
+                <button class="window-btn btn-close" onclick="closeWindow('about')"></button>
+            </div>
+        </div>
+        <div class="window-menu">
+            <span class="menu-item"><u>F</u>ile</span>
+            <span class="menu-item"><u>E</u>dit</span>
+            <span class="menu-item"><u>V</u>iew</span>
+            <span class="menu-item"><u>H</u>elp</span>
+        </div>
+        <div class="window-content">
+            <div class="intro-hero">
+                <h1>Hannah White</h1>
+                <div class="title">Chief Product Officer</div>
+                <p class="tagline">
+                    I'm a <strong>product leader</strong> at the intersection of AI and IoT, building technology that transforms how enterprises see and understand their operations.
+                </p>
+            </div>
+            <div class="content-box">
+                <div class="content-title">About</div>
+                <p class="content-text">
+                    As Chief Product Officer at Leverege, I lead product strategy and design across four enterprise products that use computer vision and IoT to solve real-world operational challenges.
+                </p>
+                <p class="content-text">
+                    My background spans product design and management, giving me a multi-disciplinary lens on building technology that's both powerful and intuitive.
+                </p>
+                <p class="content-text">
+                    Outside of work, you'll find me hiking in Shenandoah, at the pottery wheel, or working on oil paintings.
+                </p>
+            </div>
+            <div class="award-banner">
+                <span class="award-year">2019</span>
+                <div class="award-text">
+                    <h3>Best Tech Manager in Washington, DC</h3>
+                    <p>Timmy Awards</p>
+                </div>
+            </div>
+        </div>
+        <div class="window-statusbar">Ready</div>
+    </div>
+
+    <!-- Products Window -->
+    <div class="window" id="window-products" style="top: 100px; left: 150px; width: 420px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-products')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="1" y="4" width="14" height="10" fill="#000080"/>
+                <rect x="2" y="5" width="12" height="8" fill="#008080"/>
+            </svg>
+            <span class="window-title">Products I Lead</span>
+            <div class="window-controls">
+                <button class="window-btn btn-minimize" onclick="minimizeWindow('products')"></button>
+                <button class="window-btn btn-maximize" onclick="maximizeWindow('products')"></button>
+                <button class="window-btn btn-close" onclick="closeWindow('products')"></button>
+            </div>
+        </div>
+        <div class="window-menu">
+            <span class="menu-item"><u>F</u>ile</span>
+            <span class="menu-item"><u>V</u>iew</span>
+            <span class="menu-item"><u>H</u>elp</span>
+        </div>
+        <div class="window-content">
+            <div class="product-list">
+                <div class="product-card">
+                    <h4>AutoTrace</h4>
+                    <p>Asset monitoring & theft prevention for automotive and construction</p>
+                </div>
+                <div class="product-card">
+                    <h4>ExpressLane</h4>
+                    <p>Customer journey tracking for retail and quick-service</p>
+                </div>
+                <div class="product-card">
+                    <h4>PitCrew</h4>
+                    <p>Service center insights for bay utilization and performance</p>
+                </div>
+                <div class="product-card">
+                    <h4>WorkWatch</h4>
+                    <p>Computer vision for manufacturing quality and safety</p>
+                </div>
+            </div>
+        </div>
+        <div class="window-statusbar">4 object(s)</div>
+    </div>
+
+    <!-- Writing Window -->
+    <div class="window" id="window-writing" style="top: 80px; left: 200px; width: 500px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-writing')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="3" y="1" width="10" height="14" fill="#ffffe0"/>
+                <rect x="5" y="4" width="6" height="1" fill="#000080"/>
+            </svg>
+            <span class="window-title">Writing - Internet Explorer</span>
+            <div class="window-controls">
+                <button class="window-btn btn-minimize" onclick="minimizeWindow('writing')"></button>
+                <button class="window-btn btn-maximize" onclick="maximizeWindow('writing')"></button>
+                <button class="window-btn btn-close" onclick="closeWindow('writing')"></button>
+            </div>
+        </div>
+        <div class="window-menu">
+            <span class="menu-item"><u>F</u>ile</span>
+            <span class="menu-item"><u>E</u>dit</span>
+            <span class="menu-item"><u>V</u>iew</span>
+            <span class="menu-item">F<u>a</u>vorites</span>
+            <span class="menu-item"><u>H</u>elp</span>
+        </div>
+        <div class="window-content">
+            <div class="content-box">
+                <div class="content-title">Around the Web</div>
+                <ul class="writing-list">
+                    <li>
+                        <span class="writing-source">LEVEREGE</span>
+                        <a href="https://www.leverege.com/blogpost/the-clever-hans-effect-how-ai-can-be-fooled" target="_blank">The Clever Hans Effect: How AI Can Be Fooled</a>
+                    </li>
+                    <li>
+                        <span class="writing-source">LEVEREGE</span>
+                        <a href="https://www.leverege.com/blogpost/object-detection-how-ai-identifies-and-tracks-objects-in-real-time" target="_blank">Object Detection: How AI Identifies and Tracks Objects</a>
+                    </li>
+                    <li>
+                        <span class="writing-source">LEVEREGE</span>
+                        <a href="https://www.leverege.com/blogpost/understanding-image-classification-in-computer-vision" target="_blank">Image Classification: How AI Categorizes Images</a>
+                    </li>
+                    <li>
+                        <span class="writing-source">LEVEREGE</span>
+                        <a href="https://www.leverege.com/blogpost/seeing-clearly-addressing-bias-in-computer-vision-models-ai" target="_blank">Addressing Bias in Computer Vision Models</a>
+                    </li>
+                    <li>
+                        <span class="writing-source">LEVEREGE</span>
+                        <a href="https://www.leverege.com/blogpost/prioritizing-privacy-in-enterprise-computer-vision-solutions" target="_blank">Prioritizing Privacy in Enterprise Computer Vision</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="window-statusbar">Done</div>
+    </div>
+
+    <!-- Contact Window -->
+    <div class="window" id="window-contact" style="top: 120px; left: 250px; width: 350px;">
+        <div class="window-header" onmousedown="startDrag(event, 'window-contact')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="1" y="3" width="14" height="10" fill="#ffffe0"/>
+                <polygon points="1,3 8,8 15,3" fill="#c4a000"/>
+            </svg>
+            <span class="window-title">Contact - Outlook Express</span>
+            <div class="window-controls">
+                <button class="window-btn btn-minimize" onclick="minimizeWindow('contact')"></button>
+                <button class="window-btn btn-maximize" onclick="maximizeWindow('contact')"></button>
+                <button class="window-btn btn-close" onclick="closeWindow('contact')"></button>
+            </div>
+        </div>
+        <div class="window-menu">
+            <span class="menu-item"><u>F</u>ile</span>
+            <span class="menu-item"><u>E</u>dit</span>
+            <span class="menu-item"><u>V</u>iew</span>
+            <span class="menu-item"><u>H</u>elp</span>
+        </div>
+        <div class="window-content">
+            <div class="content-box">
+                <div class="content-title">New Message</div>
+                <div class="contact-row">
+                    <label>To:</label>
+                    <input type="text" class="win-input" value="hannahlizwhite@gmail.com" readonly>
+                </div>
+                <div class="contact-row">
+                    <label>Subject:</label>
+                    <input type="text" class="win-input" placeholder="Let's connect!">
+                </div>
+                <div style="margin-top: 12px; text-align: center;">
+                    <a href="mailto:hannahlizwhite@gmail.com" style="text-decoration: none;">
+                        <button class="win-btn">Send Email</button>
+                    </a>
+                    <a href="https://www.linkedin.com/in/hannah0white/" target="_blank" style="text-decoration: none; margin-left: 8px;">
+                        <button class="win-btn">LinkedIn</button>
+                    </a>
+                </div>
+            </div>
+            <p style="font-size: 10px; color: #808080; text-align: center; margin-top: 12px;">
+                Washington, DC
+            </p>
+        </div>
+        <div class="window-statusbar">Ready to send</div>
+    </div>
+
+    <!-- Start Menu -->
+    <div class="start-menu" id="start-menu">
+        <div class="start-menu-sidebar">
+            <span class="start-menu-brand">Windows<span>95</span></span>
+        </div>
+        <div class="start-menu-items">
+            <div class="start-menu-item" onclick="openWindow('about'); toggleStartMenu();">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="4" y="2" width="24" height="28" fill="#ffffe0"/>
+                    <rect x="7" y="6" width="8" height="8" fill="#008080"/>
+                </svg>
+                <span>About Hannah</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('products'); toggleStartMenu();">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="2" y="8" width="28" height="20" fill="#000080"/>
+                    <rect x="5" y="11" width="22" height="14" fill="#008080"/>
+                </svg>
+                <span>Products</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('writing'); toggleStartMenu();">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="6" y="2" width="20" height="28" fill="#ffffe0"/>
+                    <rect x="8" y="8" width="12" height="2" fill="#000080"/>
+                </svg>
+                <span>Writing</span>
+            </div>
+            <div class="start-menu-item" onclick="openWindow('contact'); toggleStartMenu();">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="2" y="6" width="28" height="20" fill="#ffffe0"/>
+                    <polygon points="3,7 16,16 29,7" fill="#c4a000"/>
+                </svg>
+                <span>Contact</span>
+            </div>
+            <div class="start-menu-divider"></div>
+            <div class="start-menu-item" onclick="window.open('https://www.linkedin.com/in/hannah0white/', '_blank'); toggleStartMenu();">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="2" y="2" width="28" height="28" fill="#0077b5"/>
+                    <rect x="6" y="12" width="4" height="14" fill="#fff"/>
+                    <rect x="6" y="6" width="4" height="4" fill="#fff"/>
+                </svg>
+                <span>LinkedIn</span>
+            </div>
+            <div class="start-menu-divider"></div>
+            <div class="start-menu-item" onclick="window.location.href='index.html'">
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                    <rect x="4" y="4" width="24" height="24" fill="#c0c0c0" stroke="#808080"/>
+                    <path d="M20 10L12 16L20 22" fill="none" stroke="#000080" stroke-width="3"/>
+                </svg>
+                <span>Exit</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-btn" id="start-btn" onclick="toggleStartMenu()">
+            <svg width="16" height="16" viewBox="0 0 16 16">
+                <rect x="1" y="1" width="6" height="6" fill="#ff0000"/>
+                <rect x="9" y="1" width="6" height="6" fill="#00ff00"/>
+                <rect x="1" y="9" width="6" height="6" fill="#0000ff"/>
+                <rect x="9" y="9" width="6" height="6" fill="#ffff00"/>
+            </svg>
+            Start
+        </button>
+        <div class="taskbar-divider"></div>
+        <div class="taskbar-windows" id="taskbar-windows">
+            <!-- Taskbar items will be added dynamically -->
+        </div>
+        <div class="system-tray">
+            <svg class="tray-icon" viewBox="0 0 16 16">
+                <rect x="2" y="4" width="12" height="8" fill="#808080"/>
+                <rect x="3" y="5" width="10" height="6" fill="#008080"/>
+            </svg>
+            <span class="tray-time" id="tray-time">12:00 PM</span>
+        </div>
+    </div>
+
+    <!-- Clippy Assistant -->
+    <div class="clippy" id="clippy">
+        <div class="clippy-bubble">
+            It looks like you're viewing a portfolio! Would you like help?
+        </div>
+        <svg class="clippy-img" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <!-- Clippy body -->
+            <ellipse cx="30" cy="50" rx="18" ry="25" fill="#c0c0c0" stroke="#808080" stroke-width="2"/>
+            <!-- Clippy wire/curve -->
+            <path d="M15,25 Q5,40 15,55 Q25,70 35,55 Q45,40 35,25" fill="none" stroke="#808080" stroke-width="8" stroke-linecap="round"/>
+            <!-- Eyes -->
+            <ellipse cx="22" cy="42" rx="6" ry="8" fill="#ffffff" stroke="#808080"/>
+            <ellipse cx="38" cy="42" rx="6" ry="8" fill="#ffffff" stroke="#808080"/>
+            <circle cx="24" cy="44" r="3" fill="#000000"/>
+            <circle cx="40" cy="44" r="3" fill="#000000"/>
+            <!-- Eyebrows -->
+            <path d="M16,34 Q22,30 28,34" fill="none" stroke="#808080" stroke-width="2"/>
+            <path d="M32,34 Q38,30 44,34" fill="none" stroke="#808080" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <script>
+        // Window management
+        const windows = {
+            about: { minimized: false, maximized: false },
+            products: { minimized: false, maximized: false },
+            writing: { minimized: false, maximized: false },
+            contact: { minimized: false, maximized: false }
+        };
+
+        let activeWindow = 'about';
+        let dragWindow = null;
+        let dragOffset = { x: 0, y: 0 };
+        let highestZ = 100;
+
+        function openWindow(name) {
+            const win = document.getElementById('window-' + name);
+            win.classList.add('active');
+            windows[name].minimized = false;
+            focusWindow(name);
+            updateTaskbar();
+        }
+
+        function closeWindow(name) {
+            const win = document.getElementById('window-' + name);
+            win.classList.remove('active');
+            updateTaskbar();
+        }
+
+        function minimizeWindow(name) {
+            const win = document.getElementById('window-' + name);
+            win.classList.remove('active');
+            windows[name].minimized = true;
+            updateTaskbar();
+        }
+
+        function maximizeWindow(name) {
+            const win = document.getElementById('window-' + name);
+            windows[name].maximized = !windows[name].maximized;
+            win.classList.toggle('maximized');
+        }
+
+        function focusWindow(name) {
+            document.querySelectorAll('.window').forEach(w => {
+                w.classList.remove('focused');
+                w.classList.add('unfocused');
+            });
+            const win = document.getElementById('window-' + name);
+            win.classList.add('focused');
+            win.classList.remove('unfocused');
+            win.style.zIndex = ++highestZ;
+            activeWindow = name;
+            updateTaskbar();
+        }
+
+        function startDrag(e, windowId) {
+            if (e.target.closest('.window-controls')) return;
+
+            const name = windowId.replace('window-', '');
+            focusWindow(name);
+
+            if (windows[name].maximized) return;
+
+            dragWindow = document.getElementById(windowId);
+            const rect = dragWindow.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!dragWindow) return;
+            dragWindow.style.left = (e.clientX - dragOffset.x) + 'px';
+            dragWindow.style.top = (e.clientY - dragOffset.y) + 'px';
+        }
+
+        function stopDrag() {
+            dragWindow = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Taskbar
+        function updateTaskbar() {
+            const container = document.getElementById('taskbar-windows');
+            container.innerHTML = '';
+
+            document.querySelectorAll('.window').forEach(win => {
+                if (!win.classList.contains('active') && !windows[win.id.replace('window-', '')].minimized) return;
+
+                const name = win.id.replace('window-', '');
+                const title = win.querySelector('.window-title').textContent;
+                const isActive = win.classList.contains('active') && win.classList.contains('focused');
+
+                const btn = document.createElement('button');
+                btn.className = 'taskbar-item' + (isActive ? ' active' : '');
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="1" width="12" height="14" fill="#ffffe0"/></svg>${title.split(' - ')[0]}`;
+                btn.onclick = () => {
+                    if (windows[name].minimized) {
+                        openWindow(name);
+                    } else if (activeWindow === name) {
+                        minimizeWindow(name);
+                    } else {
+                        focusWindow(name);
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // Start Menu
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            const btn = document.getElementById('start-btn');
+            menu.classList.toggle('active');
+            btn.classList.toggle('active');
+        }
+
+        // Close start menu when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.start-menu') && !e.target.closest('.start-btn')) {
+                document.getElementById('start-menu').classList.remove('active');
+                document.getElementById('start-btn').classList.remove('active');
+            }
+        });
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            document.getElementById('tray-time').textContent = time;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Desktop icon selection
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                document.querySelectorAll('.desktop-icon').forEach(i => i.classList.remove('selected'));
+                icon.classList.add('selected');
+            });
+        });
+
+        // Initialize
+        updateTaskbar();
+        focusWindow('about');
+
+        // Clippy stays visible - click to dismiss
+        document.getElementById('clippy').addEventListener('click', () => {
+            document.getElementById('clippy').style.display = 'none';
+        });
+
+        // Make windows clickable to focus
+        document.querySelectorAll('.window').forEach(win => {
+            win.addEventListener('mousedown', () => {
+                const name = win.id.replace('window-', '');
+                if (win.classList.contains('active')) {
+                    focusWindow(name);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

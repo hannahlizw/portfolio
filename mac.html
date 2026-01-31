@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannah White | Macintosh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mac-white: #ffffff;
+            --mac-black: #000000;
+            --mac-gray: #a8a8a8;
+            --mac-dark-gray: #545454;
+            --mac-pattern: url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23000'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23000'/%3E%3C/svg%3E");
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'VT323', 'Chicago', 'Geneva', monospace;
+            font-size: 14px;
+            background: #4040ff;
+            min-height: 100vh;
+            overflow: hidden;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='19'%3E%3Cpath fill='white' stroke='black' d='M0,0 L0,16 L4,12 L7,18 L9,17 L6,11 L11,11 Z'/%3E%3C/svg%3E") 0 0, auto;
+        }
+
+        /* Main screen area */
+        .mac-screen {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: var(--mac-gray);
+            border: 2px solid var(--mac-black);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            height: 20px;
+            background: var(--mac-white);
+            border-bottom: 2px solid var(--mac-black);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            gap: 16px;
+        }
+
+        .apple-menu {
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .menu-item {
+            font-size: 12px;
+            cursor: pointer;
+            padding: 2px 8px;
+        }
+
+        .menu-item:hover {
+            background: var(--mac-black);
+            color: var(--mac-white);
+        }
+
+        /* Desktop */
+        .desktop {
+            flex: 1;
+            position: relative;
+            background: var(--mac-pattern);
+            background-size: 2px 2px;
+            padding: 10px;
+        }
+
+        /* Desktop Icons - Right Side */
+        .desktop-icons {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .desktop-icon:hover .icon-label {
+            background: var(--mac-black);
+            color: var(--mac-white);
+        }
+
+        .icon-img {
+            width: 32px;
+            height: 32px;
+            background: var(--mac-white);
+            border: 1px solid var(--mac-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-label {
+            font-size: 10px;
+            text-align: center;
+            padding: 1px 4px;
+            background: var(--mac-white);
+            border: 1px solid var(--mac-black);
+        }
+
+        /* Trash Icon */
+        .trash-icon {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        /* Window */
+        .window {
+            position: absolute;
+            background: var(--mac-white);
+            border: 2px solid var(--mac-black);
+            min-width: 200px;
+            display: none;
+            box-shadow: 2px 2px 0 var(--mac-black);
+        }
+
+        .window.active {
+            display: block;
+        }
+
+        .window.focused {
+            z-index: 100;
+        }
+
+        .window-header {
+            height: 20px;
+            background: var(--mac-white);
+            border-bottom: 2px solid var(--mac-black);
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            cursor: move;
+            user-select: none;
+            /* Striped pattern */
+            background-image: repeating-linear-gradient(
+                0deg,
+                var(--mac-white),
+                var(--mac-white) 1px,
+                var(--mac-black) 1px,
+                var(--mac-black) 2px
+            );
+        }
+
+        .window.unfocused .window-header {
+            background: var(--mac-white);
+            background-image: none;
+        }
+
+        .close-box {
+            width: 12px;
+            height: 12px;
+            background: var(--mac-white);
+            border: 1px solid var(--mac-black);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .close-box:hover {
+            background: var(--mac-black);
+        }
+
+        .window-title {
+            flex: 1;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            background: var(--mac-white);
+            padding: 0 8px;
+            white-space: nowrap;
+        }
+
+        .window-content {
+            padding: 12px;
+            background: var(--mac-white);
+            overflow: auto;
+            max-height: calc(100vh - 150px);
+        }
+
+        /* Scrollbar */
+        .window-content::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        .window-content::-webkit-scrollbar-track {
+            background: var(--mac-pattern);
+            background-size: 2px 2px;
+            border-left: 1px solid var(--mac-black);
+        }
+
+        .window-content::-webkit-scrollbar-thumb {
+            background: var(--mac-white);
+            border: 1px solid var(--mac-black);
+        }
+
+        /* Content Styles */
+        .mac-box {
+            border: 1px solid var(--mac-black);
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--mac-white);
+        }
+
+        .mac-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--mac-black);
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+        }
+
+        .mac-text {
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .mac-text:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Hero Section */
+        .mac-hero {
+            text-align: center;
+            padding: 16px;
+            border-bottom: 2px solid var(--mac-black);
+            margin-bottom: 12px;
+        }
+
+        .mac-hero h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .mac-hero .title {
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .mac-hero .tagline {
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .product-card {
+            border: 1px solid var(--mac-black);
+            padding: 8px;
+            background: var(--mac-white);
+        }
+
+        .product-card:hover {
+            background: var(--mac-black);
+            color: var(--mac-white);
+        }
+
+        .product-card h4 {
+            font-size: 12px;
+            margin-bottom: 4px;
+            border-bottom: 1px dotted currentColor;
+            padding-bottom: 2px;
+        }
+
+        .product-card p {
+            font-size: 10px;
+        }
+
+        /* Award */
+        .award-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border: 2px solid var(--mac-black);
+            margin: 12px 0;
+            background: var(--mac-pattern);
+            background-size: 2px 2px;
+        }
+
+        .award-box .year {
+            font-size: 24px;
+            font-weight: bold;
+            background: var(--mac-white);
+            padding: 4px 8px;
+            border: 1px solid var(--mac-black);
+        }
+
+        .award-box .text {
+            background: var(--mac-white);
+            padding: 4px 8px;
+            border: 1px solid var(--mac-black);
+        }
+
+        .award-box h3 {
+            font-size: 12px;
+        }
+
+        .award-box p {
+            font-size: 10px;
+        }
+
+        /* Writing List */
+        .writing-list {
+            list-style: none;
+        }
+
+        .writing-list li {
+            padding: 4px 0;
+            border-bottom: 1px dotted var(--mac-black);
+            font-size: 11px;
+        }
+
+        .writing-list li:last-child {
+            border-bottom: none;
+        }
+
+        .writing-list a {
+            color: var(--mac-black);
+            text-decoration: none;
+        }
+
+        .writing-list a:hover {
+            text-decoration: underline;
+        }
+
+        .writing-source {
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        /* Buttons */
+        .mac-btn {
+            padding: 4px 16px;
+            background: var(--mac-white);
+            border: 2px solid var(--mac-black);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow:
+                inset 0 -2px 0 var(--mac-dark-gray),
+                inset 0 2px 0 var(--mac-white);
+        }
+
+        .mac-btn:active {
+            background: var(--mac-black);
+            color: var(--mac-white);
+        }
+
+        /* Contact */
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .contact-row label {
+            width: 50px;
+            text-align: right;
+        }
+
+        .mac-input {
+            flex: 1;
+            padding: 2px 4px;
+            font-family: inherit;
+            font-size: 12px;
+            background: var(--mac-white);
+            border: 1px solid var(--mac-black);
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 10000;
+            padding: 4px 12px;
+            background: var(--mac-white);
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--mac-black);
+            border: 2px solid var(--mac-black);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-btn:hover {
+            background: var(--mac-black);
+            color: var(--mac-white);
+        }
+
+        /* Theme Navigation */
+        .theme-nav {
+            position: fixed;
+            top: 30px;
+            right: 140px;
+            z-index: 10000;
+            display: flex;
+            gap: 4px;
+        }
+
+        .theme-link {
+            width: 28px;
+            height: 28px;
+            background: var(--mac-white);
+            border: 2px solid var(--mac-black);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .theme-link:hover {
+            background: var(--mac-black);
+        }
+
+        .theme-link:hover svg rect,
+        .theme-link:hover svg path {
+            fill: var(--mac-white);
+        }
+
+        .theme-link.current {
+            background: var(--mac-black);
+            pointer-events: none;
+        }
+
+        .theme-link.current svg rect,
+        .theme-link.current svg path,
+        .theme-link.current svg text {
+            fill: var(--mac-white);
+        }
+
+        /* Startup animation */
+        .startup-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--mac-white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            animation: startup-fade 0.5s ease-out 2s forwards;
+        }
+
+        .happy-mac {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .startup-text {
+            font-size: 14px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        @keyframes startup-fade {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .window {
+                width: calc(100% - 80px) !important;
+                left: 10px !important;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .desktop-icons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Startup Screen -->
+    <div class="startup-screen">
+        <svg class="happy-mac" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Mac body -->
+            <rect x="10" y="5" width="60" height="70" rx="5" fill="#fff" stroke="#000" stroke-width="3"/>
+            <!-- Screen -->
+            <rect x="18" y="12" width="44" height="32" fill="#fff" stroke="#000" stroke-width="2"/>
+            <!-- Happy face -->
+            <circle cx="32" cy="25" r="3" fill="#000"/>
+            <circle cx="48" cy="25" r="3" fill="#000"/>
+            <path d="M30 33 Q40 42 50 33" fill="none" stroke="#000" stroke-width="2"/>
+            <!-- Disk slot -->
+            <rect x="30" y="50" width="20" height="3" fill="#000"/>
+            <!-- Base -->
+            <rect x="20" y="75" width="40" height="8" fill="#fff" stroke="#000" stroke-width="2"/>
+            <rect x="15" y="83" width="50" height="12" rx="2" fill="#fff" stroke="#000" stroke-width="2"/>
+        </svg>
+        <div class="startup-text">Welcome to Macintosh.</div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 1L3 6L8 11"/>
+        </svg>
+        Exit
+    </a>
+
+    <!-- Theme Navigation -->
+    <div class="theme-nav">
+        <a href="mac.html" class="theme-link current" title="Mac OS 1.0 (1984)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="3" y="1" width="10" height="12" rx="1" fill="#000"/>
+                <rect x="4" y="2" width="8" height="6" fill="#fff"/>
+                <rect x="5" y="13" width="6" height="2" fill="#000"/>
+            </svg>
+        </a>
+        <a href="win95.html" class="theme-link" title="Windows 95 (1995)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="1" width="6" height="6" fill="#000"/>
+                <rect x="9" y="1" width="6" height="6" fill="#000"/>
+                <rect x="1" y="9" width="6" height="6" fill="#000"/>
+                <rect x="9" y="9" width="6" height="6" fill="#000"/>
+            </svg>
+        </a>
+        <a href="appstore.html" class="theme-link" title="App Store (2008)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="1" width="14" height="14" rx="3" fill="#000"/>
+                <text x="8" y="12" font-size="10" fill="#fff" text-anchor="middle" font-family="serif" font-weight="bold">A</text>
+            </svg>
+        </a>
+        <a href="material.html" class="theme-link" title="Material Design (2015)">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="1" width="14" height="14" rx="2" fill="#000"/>
+                <rect x="4" y="4" width="8" height="8" rx="1" fill="#fff"/>
+            </svg>
+        </a>
+        <a href="chat.html" class="theme-link" title="AI Chat (2026)" style="display:none">
+            <svg viewBox="0 0 16 16" width="14" height="14">
+                <rect x="1" y="2" width="14" height="10" rx="2" fill="#000"/>
+                <circle cx="5" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="8" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="11" cy="7" r="1.5" fill="#fff"/>
+                <path d="M4 12l2 2v-2" fill="#000"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Mac Screen -->
+    <div class="mac-screen">
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <span class="apple-menu">&#63743;</span>
+            <span class="menu-item" onclick="openWindow('about')">File</span>
+            <span class="menu-item">Edit</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Special</span>
+        </div>
+
+        <!-- Desktop -->
+        <div class="desktop">
+            <!-- Desktop Icons -->
+            <div class="desktop-icons">
+                <div class="desktop-icon" ondblclick="openWindow('about')">
+                    <div class="icon-img">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <rect x="4" y="2" width="16" height="20" fill="#fff" stroke="#000"/>
+                            <rect x="6" y="5" width="6" height="6" fill="#000"/>
+                            <line x1="6" y1="14" x2="18" y2="14" stroke="#000"/>
+                            <line x1="6" y1="17" x2="16" y2="17" stroke="#000"/>
+                        </svg>
+                    </div>
+                    <span class="icon-label">About</span>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('products')">
+                    <div class="icon-img">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <rect x="2" y="4" width="20" height="16" fill="#fff" stroke="#000"/>
+                            <rect x="4" y="6" width="16" height="10" stroke="#000" fill="none"/>
+                        </svg>
+                    </div>
+                    <span class="icon-label">Products</span>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('writing')">
+                    <div class="icon-img">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" fill="#fff" stroke="#000"/>
+                            <line x1="8" y1="6" x2="16" y2="6" stroke="#000"/>
+                            <line x1="8" y1="9" x2="14" y2="9" stroke="#000"/>
+                            <line x1="8" y1="12" x2="15" y2="12" stroke="#000"/>
+                        </svg>
+                    </div>
+                    <span class="icon-label">Writing</span>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('contact')">
+                    <div class="icon-img">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <rect x="2" y="5" width="20" height="14" fill="#fff" stroke="#000"/>
+                            <path d="M2,5 L12,13 L22,5" fill="none" stroke="#000"/>
+                        </svg>
+                    </div>
+                    <span class="icon-label">Contact</span>
+                </div>
+            </div>
+
+            <!-- Trash -->
+            <div class="desktop-icon trash-icon">
+                <div class="icon-img">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <rect x="6" y="6" width="12" height="16" fill="#fff" stroke="#000"/>
+                        <line x1="6" y1="8" x2="18" y2="8" stroke="#000"/>
+                        <line x1="6" y1="10" x2="18" y2="10" stroke="#000"/>
+                        <line x1="6" y1="12" x2="18" y2="12" stroke="#000"/>
+                        <line x1="6" y1="14" x2="18" y2="14" stroke="#000"/>
+                        <line x1="6" y1="16" x2="18" y2="16" stroke="#000"/>
+                        <line x1="6" y1="18" x2="18" y2="18" stroke="#000"/>
+                        <line x1="6" y1="20" x2="18" y2="20" stroke="#000"/>
+                        <rect x="8" y="3" width="8" height="3" fill="#fff" stroke="#000"/>
+                    </svg>
+                </div>
+                <span class="icon-label">Trash</span>
+            </div>
+
+            <!-- Windows -->
+            <!-- About Window -->
+            <div class="window active focused" id="window-about" style="top: 30px; left: 20px; width: 450px;">
+                <div class="window-header" onmousedown="startDrag(event, 'window-about')">
+                    <div class="close-box" onclick="closeWindow('about')"></div>
+                    <span class="window-title">About Hannah</span>
+                </div>
+                <div class="window-content">
+                    <div class="mac-hero">
+                        <h1>Hannah White</h1>
+                        <div class="title">CHIEF PRODUCT OFFICER</div>
+                        <p class="tagline">
+                            I'm a product leader at the intersection of AI and IoT, building technology that transforms how enterprises see and understand their operations.
+                        </p>
+                    </div>
+                    <div class="mac-box">
+                        <div class="mac-title">About</div>
+                        <p class="mac-text">
+                            As Chief Product Officer at Leverege, I lead product strategy and design across four enterprise products that use computer vision and IoT to solve real-world operational challenges.
+                        </p>
+                        <p class="mac-text">
+                            My background spans product design and management, giving me a multi-disciplinary lens on building technology that's both powerful and intuitive.
+                        </p>
+                        <p class="mac-text">
+                            Outside of work, you'll find me hiking in Shenandoah, at the pottery wheel, or working on oil paintings.
+                        </p>
+                    </div>
+                    <div class="award-box">
+                        <span class="year">2019</span>
+                        <div class="text">
+                            <h3>Best Tech Manager in Washington, DC</h3>
+                            <p>Timmy Awards</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Window -->
+            <div class="window" id="window-products" style="top: 60px; left: 100px; width: 380px;">
+                <div class="window-header" onmousedown="startDrag(event, 'window-products')">
+                    <div class="close-box" onclick="closeWindow('products')"></div>
+                    <span class="window-title">Products I Lead</span>
+                </div>
+                <div class="window-content">
+                    <div class="product-grid">
+                        <div class="product-card">
+                            <h4>AutoTrace</h4>
+                            <p>Asset monitoring & theft prevention for automotive and construction</p>
+                        </div>
+                        <div class="product-card">
+                            <h4>ExpressLane</h4>
+                            <p>Customer journey tracking for retail and quick-service</p>
+                        </div>
+                        <div class="product-card">
+                            <h4>PitCrew</h4>
+                            <p>Service center insights for bay utilization and performance</p>
+                        </div>
+                        <div class="product-card">
+                            <h4>WorkWatch</h4>
+                            <p>Computer vision for manufacturing quality and safety</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Writing Window -->
+            <div class="window" id="window-writing" style="top: 90px; left: 150px; width: 420px;">
+                <div class="window-header" onmousedown="startDrag(event, 'window-writing')">
+                    <div class="close-box" onclick="closeWindow('writing')"></div>
+                    <span class="window-title">Writing</span>
+                </div>
+                <div class="window-content">
+                    <div class="mac-box">
+                        <div class="mac-title">Around the Web</div>
+                        <ul class="writing-list">
+                            <li>
+                                <span class="writing-source">[Leverege]</span>
+                                <a href="https://www.leverege.com/blogpost/the-clever-hans-effect-how-ai-can-be-fooled" target="_blank">The Clever Hans Effect: How AI Can Be Fooled</a>
+                            </li>
+                            <li>
+                                <span class="writing-source">[Leverege]</span>
+                                <a href="https://www.leverege.com/blogpost/object-detection-how-ai-identifies-and-tracks-objects-in-real-time" target="_blank">Object Detection: How AI Identifies and Tracks Objects</a>
+                            </li>
+                            <li>
+                                <span class="writing-source">[Leverege]</span>
+                                <a href="https://www.leverege.com/blogpost/understanding-image-classification-in-computer-vision" target="_blank">Image Classification: How AI Categorizes Images</a>
+                            </li>
+                            <li>
+                                <span class="writing-source">[Leverege]</span>
+                                <a href="https://www.leverege.com/blogpost/seeing-clearly-addressing-bias-in-computer-vision-models-ai" target="_blank">Addressing Bias in Computer Vision Models</a>
+                            </li>
+                            <li>
+                                <span class="writing-source">[Leverege]</span>
+                                <a href="https://www.leverege.com/blogpost/prioritizing-privacy-in-enterprise-computer-vision-solutions" target="_blank">Prioritizing Privacy in Enterprise Computer Vision</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Window -->
+            <div class="window" id="window-contact" style="top: 120px; left: 200px; width: 320px;">
+                <div class="window-header" onmousedown="startDrag(event, 'window-contact')">
+                    <div class="close-box" onclick="closeWindow('contact')"></div>
+                    <span class="window-title">Contact</span>
+                </div>
+                <div class="window-content">
+                    <div class="mac-box">
+                        <div class="mac-title">Send a Message</div>
+                        <div class="contact-row">
+                            <label>To:</label>
+                            <input type="text" class="mac-input" value="hannahlizwhite@gmail.com" readonly>
+                        </div>
+                        <div style="margin-top: 16px; text-align: center;">
+                            <a href="mailto:hannahlizwhite@gmail.com" style="text-decoration: none;">
+                                <button class="mac-btn">Send Email</button>
+                            </a>
+                            <a href="https://www.linkedin.com/in/hannah0white/" target="_blank" style="text-decoration: none; margin-left: 8px;">
+                                <button class="mac-btn">LinkedIn</button>
+                            </a>
+                        </div>
+                    </div>
+                    <p style="font-size: 10px; text-align: center; margin-top: 12px;">
+                        Washington, DC
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Window management
+        let activeWindow = 'about';
+        let dragWindow = null;
+        let dragOffset = { x: 0, y: 0 };
+        let highestZ = 100;
+
+        function openWindow(name) {
+            const win = document.getElementById('window-' + name);
+            win.classList.add('active');
+            focusWindow(name);
+        }
+
+        function closeWindow(name) {
+            const win = document.getElementById('window-' + name);
+            win.classList.remove('active');
+        }
+
+        function focusWindow(name) {
+            document.querySelectorAll('.window').forEach(w => {
+                w.classList.remove('focused');
+                w.classList.add('unfocused');
+            });
+            const win = document.getElementById('window-' + name);
+            win.classList.add('focused');
+            win.classList.remove('unfocused');
+            win.style.zIndex = ++highestZ;
+            activeWindow = name;
+        }
+
+        function startDrag(e, windowId) {
+            const name = windowId.replace('window-', '');
+            focusWindow(name);
+
+            dragWindow = document.getElementById(windowId);
+            const rect = dragWindow.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!dragWindow) return;
+            const screen = document.querySelector('.desktop');
+            const screenRect = screen.getBoundingClientRect();
+
+            let newX = e.clientX - dragOffset.x - screenRect.left;
+            let newY = e.clientY - dragOffset.y - screenRect.top;
+
+            dragWindow.style.left = newX + 'px';
+            dragWindow.style.top = newY + 'px';
+        }
+
+        function stopDrag() {
+            dragWindow = null;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // Initialize
+        focusWindow('about');
+
+        // Make windows clickable to focus
+        document.querySelectorAll('.window').forEach(win => {
+            win.addEventListener('mousedown', () => {
+                const name = win.id.replace('window-', '');
+                if (win.classList.contains('active')) {
+                    focusWindow(name);
+                }
+            });
+        });
+
+        // Desktop icon selection
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+            icon.addEventListener('click', () => {
+                document.querySelectorAll('.desktop-icon').forEach(i => {
+                    i.querySelector('.icon-label').style.background = '#fff';
+                    i.querySelector('.icon-label').style.color = '#000';
+                });
+                icon.querySelector('.icon-label').style.background = '#000';
+                icon.querySelector('.icon-label').style.color = '#fff';
+            });
+        });
+    </script>
+</body>
+</html>

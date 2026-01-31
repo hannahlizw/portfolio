@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hannah White | App Store 2008</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ios-blue: #1BA1E2;
+            --ios-dark-blue: #0066CC;
+            --ios-gray: #8E8E93;
+            --ios-light-gray: #C7C7CC;
+            --ios-bg: #EFEFF4;
+            --linen: #d5d0c3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            background: #000000;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Subtle gradient for depth */
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%);
+        }
+
+        /* iPhone frame */
+        .iphone-frame {
+            width: 375px;
+            background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            border-radius: 50px;
+            padding: 14px;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.1),
+                0 0 0 2px #000,
+                0 50px 100px rgba(0,0,0,0.8),
+                inset 0 1px 1px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        /* Subtle reflection on frame */
+        .iphone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            border-radius: 50px 50px 0 0;
+            pointer-events: none;
+        }
+
+        .iphone-screen {
+            background: var(--ios-bg);
+            border-radius: 38px;
+            overflow: hidden;
+            position: relative;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Status bar */
+        .status-bar {
+            height: 20px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+            border-bottom: 1px solid #b5b5b5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .status-bar .carrier {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 1px;
+            align-items: flex-end;
+        }
+
+        .signal-bars span {
+            width: 3px;
+            background: #000;
+            border-radius: 1px;
+        }
+
+        .signal-bars span:nth-child(1) { height: 4px; }
+        .signal-bars span:nth-child(2) { height: 6px; }
+        .signal-bars span:nth-child(3) { height: 8px; }
+        .signal-bars span:nth-child(4) { height: 10px; }
+        .signal-bars span:nth-child(5) { height: 12px; opacity: 0.3; }
+
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Navigation bar */
+        .nav-bar {
+            height: 44px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg,
+                #f7f7f7 0%,
+                #d8d8d8 100%
+            );
+            border-bottom: 1px solid #b2b2b2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset;
+        }
+
+        .nav-title {
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        .nav-btn {
+            position: absolute;
+            left: 10px;
+            background: none;
+            border: none;
+            padding: 4px 10px;
+            color: #007aff;
+            font-size: 14px;
+            font-weight: normal;
+            text-decoration: none;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--ios-bg);
+            /* iOS-style scrollbar */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Featured banner */
+        .featured-banner {
+            background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .featured-banner h1 {
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .featured-banner p {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        /* App icon style */
+        .app-icon {
+            width: 57px;
+            height: 57px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #c4553d 0%, #8b3a2a 100%);
+            position: relative;
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .app-icon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Section */
+        .section {
+            padding: 12px;
+            background: #fff;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow:
+                0 1px 3px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--ios-light-gray);
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .see-all {
+            color: var(--ios-blue);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        /* App list item */
+        .app-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .app-item:last-child {
+            border-bottom: none;
+        }
+
+        .app-info {
+            flex: 1;
+        }
+
+        .app-name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .app-desc {
+            font-size: 11px;
+            color: var(--ios-gray);
+            line-height: 1.3;
+        }
+
+        .app-rating {
+            display: flex;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .star {
+            color: #FF9500;
+            font-size: 10px;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        /* Glossy button */
+        .glossy-btn {
+            background: linear-gradient(180deg,
+                #7dd756 0%,
+                #57b731 50%,
+                #4aa328 51%,
+                #3d8a1f 100%
+            );
+            border: 1px solid #2d6a15;
+            border-radius: 5px;
+            padding: 6px 12px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.3);
+            cursor: pointer;
+            box-shadow:
+                0 1px 0 rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+
+        .glossy-btn.blue {
+            background: linear-gradient(180deg,
+                #5aa7df 0%,
+                #3d8ed4 50%,
+                #2a6eb0 51%,
+                #1a5a8c 100%
+            );
+            border-color: #1a4a6c;
+        }
+
+        /* About section */
+        .about-card {
+            padding: 16px;
+        }
+
+        .about-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .about-text:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Award badge */
+        .award-badge {
+            background: linear-gradient(180deg, #ffd700 0%, #c7a600 100%);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+
+        .award-badge .year {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .award-badge .text h4 {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .award-badge .text p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* Links */
+        .link-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        /* Tab bar */
+        .tab-bar {
+            height: 50px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg,
+                #8e8e93 0%,
+                #636366 3%,
+                #48484a 50%,
+                #3a3a3c 51%,
+                #2c2c2e 100%
+            );
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: #888;
+            font-size: 10px;
+            text-decoration: none;
+        }
+
+        .tab-item.active {
+            color: #fff;
+        }
+
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Writing list */
+        .writing-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .writing-item:last-child {
+            border-bottom: none;
+        }
+
+        .writing-item a {
+            color: var(--ios-blue);
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+        }
+
+        .writing-source {
+            font-size: 10px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        /* Home indicator area */
+        .home-btn-area {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            margin-top: 8px;
+        }
+
+        .home-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #3a3a3a 0%, #1a1a1a 100%);
+            border: 2px solid #4a4a4a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .home-btn-inner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #555;
+            border-radius: 4px;
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        /* Theme Navigation */
+        .theme-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-link {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .theme-link:hover {
+            background: rgba(255,255,255,0.15);
+            transform: scale(1.05);
+        }
+
+        .theme-link.current {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            pointer-events: none;
+        }
+
+        /* Products grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .product-mini {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .product-mini-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-mini-icon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+        }
+
+        .product-mini-icon.autotrace { background: linear-gradient(180deg, #5856d6 0%, #3634a3 100%); }
+        .product-mini-icon.expresslane { background: linear-gradient(180deg, #ff9500 0%, #c77400 100%); }
+        .product-mini-icon.pitcrew { background: linear-gradient(180deg, #ff3b30 0%, #c72d24 100%); }
+        .product-mini-icon.workwatch { background: linear-gradient(180deg, #34c759 0%, #248a3d 100%); }
+
+        .product-mini h4 {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .product-mini p {
+            font-size: 9px;
+            color: var(--ios-gray);
+            line-height: 1.3;
+        }
+
+        /* Responsive */
+        @media (max-height: 750px) {
+            .iphone-screen {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                align-items: flex-start;
+                padding: 0;
+            }
+            .iphone-frame {
+                width: 100%;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            .iphone-frame::before {
+                display: none;
+            }
+            .iphone-screen {
+                border-radius: 0;
+                height: 100vh;
+                height: 100dvh;
+            }
+            .home-btn-area {
+                display: none;
+            }
+            .back-link {
+                top: 10px;
+                right: 10px;
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 1L3 6L8 11"/>
+        </svg>
+        Exit
+    </a>
+
+    <!-- Theme Navigation -->
+    <div class="theme-nav">
+        <a href="mac.html" class="theme-link" title="Mac OS 1.0 (1984)">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+                <rect x="3" y="1" width="10" height="12" rx="1" fill="rgba(255,255,255,0.8)"/>
+                <rect x="4" y="2" width="8" height="6" fill="rgba(0,0,0,0.3)"/>
+                <rect x="5" y="13" width="6" height="2" fill="rgba(255,255,255,0.8)"/>
+            </svg>
+        </a>
+        <a href="win95.html" class="theme-link" title="Windows 95 (1995)">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+                <rect x="1" y="1" width="6" height="6" fill="#FF0000"/>
+                <rect x="9" y="1" width="6" height="6" fill="#00FF00"/>
+                <rect x="1" y="9" width="6" height="6" fill="#0000FF"/>
+                <rect x="9" y="9" width="6" height="6" fill="#FFFF00"/>
+            </svg>
+        </a>
+        <a href="appstore.html" class="theme-link current" title="App Store (2008)">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+                <defs>
+                    <linearGradient id="appstore-nav" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1BA1E2"/>
+                        <stop offset="100%" style="stop-color:#0066CC"/>
+                    </linearGradient>
+                </defs>
+                <rect x="1" y="1" width="14" height="14" rx="3" fill="url(#appstore-nav)"/>
+                <text x="8" y="12" font-size="10" fill="white" text-anchor="middle" font-family="serif" font-weight="bold">A</text>
+            </svg>
+        </a>
+        <a href="material.html" class="theme-link" title="Material Design (2015)">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+                <rect x="1" y="1" width="14" height="14" rx="2" fill="#4285F4"/>
+                <rect x="3" y="3" width="10" height="10" rx="1" fill="#EA4335"/>
+                <rect x="5" y="5" width="6" height="6" rx="1" fill="#FBBC05"/>
+                <rect x="7" y="7" width="2" height="2" fill="#34A853"/>
+            </svg>
+        </a>
+        <a href="chat.html" class="theme-link" title="AI Chat (2026)" style="display:none">
+            <svg viewBox="0 0 16 16" width="16" height="16">
+                <rect x="1" y="2" width="14" height="10" rx="2" fill="#3b82f6"/>
+                <circle cx="5" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="8" cy="7" r="1.5" fill="#fff"/>
+                <circle cx="11" cy="7" r="1.5" fill="#fff"/>
+                <path d="M4 12l2 2v-2" fill="#3b82f6"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="iphone-frame">
+        <div class="iphone-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="carrier">
+                    <div class="signal-bars">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    AT&T
+                </div>
+                <span>9:41 AM</span>
+                <div class="status-icons">
+                    <span>100%</span>
+                    <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
+                        <rect x="0" y="1" width="16" height="8" rx="1" stroke="black" stroke-width="1"/>
+                        <rect x="1.5" y="2.5" width="13" height="5" fill="black"/>
+                        <rect x="17" y="3" width="2" height="4" rx="0.5" fill="black"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Nav Bar -->
+            <div class="nav-bar">
+                <a href="index.html" class="nav-btn">← Back</a>
+                <span class="nav-title">App Store</span>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Featured Banner -->
+                <div id="section-featured" class="featured-banner">
+                    <h1>Hannah White</h1>
+                    <p>Chief Product Officer</p>
+                </div>
+
+                <!-- About Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span class="section-title">About</span>
+                    </div>
+                    <div class="about-card">
+                        <p class="about-text">
+                            I'm a product leader at the intersection of AI and IoT, building technology that transforms how enterprises see and understand their operations.
+                        </p>
+                        <p class="about-text">
+                            As Chief Product Officer at Leverege, I lead product strategy and design across four enterprise products.
+                        </p>
+                        <p class="about-text">
+                            Outside of work, you'll find me hiking in Shenandoah, at the pottery wheel, or working on oil paintings.
+                        </p>
+
+                        <div class="award-badge">
+                            <span class="year">2019</span>
+                            <div class="text">
+                                <h4>Best Tech Manager in Washington, DC</h4>
+                                <p>Timmy Awards</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="section-apps" class="section">
+                    <div class="section-header">
+                        <span class="section-title">Products I Lead</span>
+                        <span class="see-all">4 Apps</span>
+                    </div>
+                    <div class="products-grid">
+                        <div class="product-mini">
+                            <div class="product-mini-icon autotrace">🚗</div>
+                            <h4>AutoTrace</h4>
+                            <p>Asset monitoring & theft prevention</p>
+                            <div class="app-rating" style="justify-content: center; margin-top: 4px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+                        <div class="product-mini">
+                            <div class="product-mini-icon expresslane">🛒</div>
+                            <h4>ExpressLane</h4>
+                            <p>Customer journey tracking</p>
+                            <div class="app-rating" style="justify-content: center; margin-top: 4px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+                        <div class="product-mini">
+                            <div class="product-mini-icon pitcrew">🔧</div>
+                            <h4>PitCrew</h4>
+                            <p>Service center insights</p>
+                            <div class="app-rating" style="justify-content: center; margin-top: 4px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+                        <div class="product-mini">
+                            <div class="product-mini-icon workwatch">👁️</div>
+                            <h4>WorkWatch</h4>
+                            <p>Computer vision for quality</p>
+                            <div class="app-rating" style="justify-content: center; margin-top: 4px;">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Writing Section -->
+                <div id="section-articles" class="section">
+                    <div class="section-header">
+                        <span class="section-title">Writing</span>
+                        <span class="see-all">5 Articles</span>
+                    </div>
+                    <div class="writing-item">
+                        <div class="writing-source">Leverege</div>
+                        <a href="https://www.leverege.com/blogpost/the-clever-hans-effect-how-ai-can-be-fooled" target="_blank">The Clever Hans Effect: How AI Can Be Fooled</a>
+                    </div>
+                    <div class="writing-item">
+                        <div class="writing-source">Leverege</div>
+                        <a href="https://www.leverege.com/blogpost/object-detection-how-ai-identifies-and-tracks-objects-in-real-time" target="_blank">Object Detection: How AI Identifies and Tracks Objects</a>
+                    </div>
+                    <div class="writing-item">
+                        <div class="writing-source">Leverege</div>
+                        <a href="https://www.leverege.com/blogpost/understanding-image-classification-in-computer-vision" target="_blank">Image Classification: How AI Categorizes Images</a>
+                    </div>
+                    <div class="writing-item">
+                        <div class="writing-source">Leverege</div>
+                        <a href="https://www.leverege.com/blogpost/seeing-clearly-addressing-bias-in-computer-vision-models-ai" target="_blank">Addressing Bias in Computer Vision Models</a>
+                    </div>
+                    <div class="writing-item">
+                        <div class="writing-source">Leverege</div>
+                        <a href="https://www.leverege.com/blogpost/prioritizing-privacy-in-enterprise-computer-vision-solutions" target="_blank">Prioritizing Privacy in Enterprise Computer Vision</a>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div id="section-contact" class="section">
+                    <div class="section-header">
+                        <span class="section-title">Contact</span>
+                    </div>
+                    <div class="link-row">
+                        <a href="https://www.linkedin.com/in/hannah0white/" target="_blank">
+                            <button class="glossy-btn blue">LinkedIn</button>
+                        </a>
+                        <a href="mailto:hannahlizwhite@gmail.com">
+                            <button class="glossy-btn">Email</button>
+                        </a>
+                    </div>
+                    <p style="text-align: center; font-size: 11px; color: var(--ios-gray);">Washington, DC</p>
+                </div>
+
+                <div style="height: 20px;"></div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <a href="#section-featured" class="tab-item active" data-section="section-featured">
+                    <div class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 1l2.5 6h6.5l-5 4.5 2 6.5-6-4-6 4 2-6.5-5-4.5h6.5z"/>
+                        </svg>
+                    </div>
+                    <span>Featured</span>
+                </a>
+                <a href="#section-apps" class="tab-item" data-section="section-apps">
+                    <div class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <rect x="2" y="2" width="7" height="7" rx="1"/>
+                            <rect x="11" y="2" width="7" height="7" rx="1"/>
+                            <rect x="2" y="11" width="7" height="7" rx="1"/>
+                            <rect x="11" y="11" width="7" height="7" rx="1"/>
+                        </svg>
+                    </div>
+                    <span>Apps</span>
+                </a>
+                <a href="#section-articles" class="tab-item" data-section="section-articles">
+                    <div class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <rect x="2" y="2" width="16" height="3" rx="1"/>
+                            <rect x="2" y="7" width="16" height="3" rx="1"/>
+                            <rect x="2" y="12" width="16" height="3" rx="1"/>
+                        </svg>
+                    </div>
+                    <span>Articles</span>
+                </a>
+                <a href="#section-contact" class="tab-item" data-section="section-contact">
+                    <div class="tab-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <rect x="2" y="4" width="16" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M2 6l8 5 8-5" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <span>Contact</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Home Button -->
+        <div class="home-btn-area">
+            <div class="home-btn">
+                <div class="home-btn-inner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab bar smooth scrolling
+        const content = document.querySelector('.content');
+        const tabItems = document.querySelectorAll('.tab-item');
+
+        tabItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = item.dataset.section;
+                const section = document.getElementById(sectionId);
+
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Update active state
+                    tabItems.forEach(tab => tab.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Update active tab on scroll
+        const sections = ['section-featured', 'section-apps', 'section-articles', 'section-contact'];
+
+        content.addEventListener('scroll', () => {
+            let current = sections[0];
+
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    const contentRect = content.getBoundingClientRect();
+                    if (rect.top <= contentRect.top + 80) {
+                        current = sectionId;
+                    }
+                }
+            });
+
+            tabItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.section === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
