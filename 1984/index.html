@@ -673,7 +673,7 @@
             <!-- Windows -->
             <!-- About Window -->
             <div class="window active focused" id="window-about" style="top: 30px; left: 20px; width: 450px;">
-                <div class="window-header" onmousedown="startDrag(event, 'window-about')">
+                <div class="window-header" onmousedown="startDrag(event, 'window-about')" ontouchstart="startDrag(event, 'window-about')">
                     <div class="close-box" onclick="closeWindow('about')"></div>
                     <span class="window-title">About Hannah</span>
                 </div>
@@ -709,7 +709,7 @@
 
             <!-- Products Window -->
             <div class="window" id="window-products" style="top: 60px; left: 100px; width: 380px;">
-                <div class="window-header" onmousedown="startDrag(event, 'window-products')">
+                <div class="window-header" onmousedown="startDrag(event, 'window-products')" ontouchstart="startDrag(event, 'window-products')">
                     <div class="close-box" onclick="closeWindow('products')"></div>
                     <span class="window-title">Products I Lead</span>
                 </div>
@@ -737,7 +737,7 @@
 
             <!-- Writing Window -->
             <div class="window" id="window-writing" style="top: 90px; left: 150px; width: 420px;">
-                <div class="window-header" onmousedown="startDrag(event, 'window-writing')">
+                <div class="window-header" onmousedown="startDrag(event, 'window-writing')" ontouchstart="startDrag(event, 'window-writing')">
                     <div class="close-box" onclick="closeWindow('writing')"></div>
                     <span class="window-title">Writing</span>
                 </div>
@@ -772,7 +772,7 @@
 
             <!-- Contact Window -->
             <div class="window" id="window-contact" style="top: 120px; left: 200px; width: 320px;">
-                <div class="window-header" onmousedown="startDrag(event, 'window-contact')">
+                <div class="window-header" onmousedown="startDrag(event, 'window-contact')" ontouchstart="startDrag(event, 'window-contact')">
                     <div class="close-box" onclick="closeWindow('contact')"></div>
                     <span class="window-title">Contact</span>
                 </div>
@@ -836,20 +836,32 @@
 
             dragWindow = document.getElementById(windowId);
             const rect = dragWindow.getBoundingClientRect();
-            dragOffset.x = e.clientX - rect.left;
-            dragOffset.y = e.clientY - rect.top;
+
+            // Handle both mouse and touch events
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            dragOffset.x = clientX - rect.left;
+            dragOffset.y = clientY - rect.top;
 
             document.addEventListener('mousemove', onDrag);
             document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('touchend', stopDrag);
         }
 
         function onDrag(e) {
             if (!dragWindow) return;
+            if (e.touches) e.preventDefault(); // Prevent scrolling on touch
+
             const screen = document.querySelector('.desktop');
             const screenRect = screen.getBoundingClientRect();
 
-            let newX = e.clientX - dragOffset.x - screenRect.left;
-            let newY = e.clientY - dragOffset.y - screenRect.top;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            let newX = clientX - dragOffset.x - screenRect.left;
+            let newY = clientY - dragOffset.y - screenRect.top;
 
             dragWindow.style.left = newX + 'px';
             dragWindow.style.top = newY + 'px';
@@ -859,6 +871,8 @@
             dragWindow = null;
             document.removeEventListener('mousemove', onDrag);
             document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('touchend', stopDrag);
         }
 
         // Initialize
